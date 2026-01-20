@@ -145,11 +145,43 @@ export default function MainScreen() {
     }
   };
 
+  const validateDate = (dateString: string): boolean => {
+    // Check format YYYY-MM-DD
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(dateString)) {
+      return false;
+    }
+    
+    // Check if it's a valid date
+    const date = new Date(dateString);
+    const [year, month, day] = dateString.split('-').map(Number);
+    
+    // Check if the date is valid and matches the input
+    return (
+      date instanceof Date &&
+      !isNaN(date.getTime()) &&
+      date.getFullYear() === year &&
+      date.getMonth() + 1 === month &&
+      date.getDate() === day
+    );
+  };
+
   const handleAddLog = async () => {
     if (!newLog.date || !newLog.amount || !newLog.type) {
       showMessage({
         message: 'Error',
         description: 'Please fill required fields (date, amount, type)',
+        type: 'danger',
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate date format and validity
+    if (!validateDate(newLog.date)) {
+      showMessage({
+        message: 'Error',
+        description: 'Please enter a valid date in YYYY-MM-DD format (e.g., 2026-01-15)',
         type: 'danger',
         duration: 3000,
       });
